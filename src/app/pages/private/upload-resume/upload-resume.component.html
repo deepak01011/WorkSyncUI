@@ -1,0 +1,105 @@
+<div>
+    <app-page-breadcrumb pageTitle="Upload Resume" />
+    <div
+        class="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
+
+        <div
+            class="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-brand-500 dark:border-gray-700 rounded-xl hover:border-brand-500">
+            <form class="dropzone rounded-xl border-dashed border-gray-300 p-7 lg:p-10" id="demo-upload" [ngClass]="isDragActive
+        ? 'border-brand-500 bg-gray-100 dark:bg-gray-800'
+        : 'border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-900'" (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" (click)="fileInput.click()"
+                style="position: relative;">
+                <!-- Hidden Input -->
+                <input #fileInput type="file" accept=".doc,.docx,.pdf" multiple style="display: none"
+                    (change)="onFileSelected($event)" />
+
+                <div class="dz-message flex flex-col items-center m-0!">
+                    <!-- Icon Container -->
+                    <div class="mb-[22px] flex justify-center">
+                        <div
+                            class="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400">
+                            <svg class="fill-current" width="29" height="28" viewBox="0 0 29 28"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M14.5019 3.91699C14.2852 3.91699 14.0899 4.00891 13.953 4.15589L8.57363 9.53186C8.28065 9.82466 8.2805 10.2995 8.5733 10.5925C8.8661 10.8855 9.34097 10.8857 9.63396 10.5929L13.7519 6.47752V18.667C13.7519 19.0812 14.0877 19.417 14.5019 19.417C14.9161 19.417 15.2519 19.0812 15.2519 18.667V6.48234L19.3653 10.5929C19.6583 10.8857 20.1332 10.8855 20.426 10.5925C20.7188 10.2995 20.7186 9.82463 20.4256 9.53184L15.0838 4.19378C14.9463 4.02488 14.7367 3.91699 14.5019 3.91699ZM5.91626 18.667C5.91626 18.2528 5.58047 17.917 5.16626 17.917C4.75205 17.917 4.41626 18.2528 4.41626 18.667V21.8337C4.41626 23.0763 5.42362 24.0837 6.66626 24.0837H22.3339C23.5766 24.0837 24.5839 23.0763 24.5839 21.8337V18.667C24.5839 18.2528 24.2482 17.917 23.8339 17.917C23.4197 17.917 23.0839 18.2528 23.0839 18.667V21.8337C23.0839 22.2479 22.7482 22.5837 22.3339 22.5837H6.66626C6.25205 22.5837 5.91626 22.2479 5.91626 21.8337V18.667Z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Text Content -->
+                    <h4 class="mb-3 font-semibold text-gray-800 text-theme-xl dark:text-white/90">
+                        {{ isDragActive ? 'Drop Files Here' : 'Drag & Drop Files Here' }}
+                    </h4>
+
+                    <span class="text-center mb-5 block w-full max-w-[290px] text-sm text-gray-700 dark:text-gray-400">
+                        Drag and drop your .doc, .docx, or .pdf resume here or browse
+                    </span>
+
+                    <span class="font-medium underline text-theme-sm text-brand-500">
+                        Browse File
+                    </span>
+                </div>
+            </form>
+        </div>
+
+        <div class="space-y-6 mt-4">
+
+            <div class="flex items-center gap-5">
+
+                @if (selectedFiles.length) {
+                <app-button size="sm" variant="primary" [startIcon]="boxIcon" (btnClick)="uploadFiles()"
+                    [disabled]="isUploading">
+                    Upload
+                </app-button>
+                }
+
+                @if (isUploading) {
+                <div class="space-y-2 w-full sm:w-full md:w-full lg:w-full xl:w-full">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Uploading... {{uploadProgress}}%</p>
+                    <progress [value]="uploadProgress" max="100"
+                        class="w-full h-2 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700">
+                    </progress>
+                </div>
+                }
+            </div>
+        </div>
+        @if (selectedFiles.length) {
+        <div
+            class="overflow-hidden rounded-2xl mt-4 border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+            <div class="max-w-full overflow-x-auto">
+                <table class="min-w-full">
+                    <!-- Table Header -->
+                    <thead class="border-b border-gray-100 dark:border-white/[0.05]">
+                        <tr>
+                            <th class="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                                FileName</th>
+                            <th class="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                                File Size</th>
+                            <th class="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                                Type</th>
+                        </tr>
+                    </thead>
+                    <!-- Table Body -->
+                    <tbody class="divide-y divide-gray-100 dark:divide-white/[0.05]">
+                        @for (file of selectedFiles; track $index) {
+                        <tr>
+
+                            <td class="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                {{ file.name }}
+                            </td>
+                            <td class="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                {{ (file.size / 1024).toFixed(2) }} KB
+                            </td>
+                            <td class="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                                {{ file.type || 'N/A' }}
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        }
+    </div>
+</div>
